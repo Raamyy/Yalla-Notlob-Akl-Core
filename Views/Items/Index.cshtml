@@ -1,0 +1,161 @@
+@using Yalla_Notlob_Akl.Models
+@model List<Item>
+
+@{
+    ViewData["Title"] = "Items Page";
+}
+
+<head>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <link rel="stylesheet" href="~/lib/FullTable/jquery.fulltable.css" />
+</head>
+
+<style>
+    td,
+    th {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    input {
+        border-radius: 12px;
+    }
+
+    a.button {
+			position: relative;
+			display: inline-block;
+
+			font-family: tahoma, arial, helvetica;
+			font-size: 9pt;
+			font-weight: bold;
+
+			color: #ffffff;
+			background-color: #AAAAAA;
+
+			padding: 5px;
+
+			text-decoration: none;
+
+			-webkit-border-radius: 5px;
+			-moz-border-radius: 5px;
+			border-radius: 5px;
+		}
+
+
+</style>
+
+<div class="container">
+    <h2>Items</h2>
+    <table class="fulltable fulltable-editable table table-bordered table-hover" id="items-table">
+        <thead>
+            <tr>
+                <th fulltable-field-name="ItemId" hidden></th>
+                <th fulltable-field-name="ItemName">Item Name</th>
+                <th fulltable-field-name="ItemPrice">Item Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td hidden><span>@item.id</span></td>
+                    <td><span>@item.name</span></td>
+                    <td><span>@item.price</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(
+        function () {
+            let ft = $("#items-table").FullTable(
+                {
+                    "alwaysCreating": true,
+                    "fields":
+                    {
+                        "ItemId":
+                        {
+                            "mandatory": false,
+                            "hidden": true
+                        },
+                        "ItemName":
+                        {
+                            "mandatory": true,
+                            "placeholder": "Enter item name",
+                            "errors": {
+                                "mandatory": "Item name is mandatory"
+                            }
+                        },
+
+                        "ItemPrice":
+                        {
+                            "mandatory": false,
+                            "type": "decimal",
+                            "placeholder": "Enter item price",
+                            "validator": function (price) {
+                                if (isNaN(price)) return false;
+                                return price >= 0;
+                            },
+                            "errors": {
+                                "type": "pelase enter a number",
+                                "validator": "Item price should be a valid positive number"
+                            }
+                        }
+                    },
+                    "onSave": function (item) {
+                        if(item.ItemId){ // update
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("Update")",
+                                data: JSON.stringify({id: item.ItemId, name: item.ItemName, price: item.ItemPrice }),
+                                contentType: 'application/json',
+                                success: function (msg) {
+                                    console.log(msg);
+                                    console.log(item);
+                                },
+                                error: function (req, status, error) {
+                                    console.log(error);
+                                }
+                            })
+                        }else { // create
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("Add")",
+                                data: JSON.stringify({ name: item.ItemName, price: item.ItemPrice }),
+                                contentType: 'application/json',
+                                success: function (msg) {
+                                    console.log(msg);
+                                    console.log(item);
+                                    item.ItemId = msg.id;
+                                    debugger
+                                },
+                                error: function (req, status, error) {
+                                    console.log(error);
+                                }
+                            })
+                        }
+                        
+                    },
+                }
+            );
+
+            $("#items-table-add-row").click(function (e) {
+                $("#items-table").FullTable("addRow");
+                console.log("hii");
+            });
+            $("#items-table-get-value").click(function () {
+                console.log($("#items-table").FullTable("getData"));
+            });
+            $("#items-table").FullTable("on", "error", function (errors) {
+                for (var error in errors) {
+                    error = errors[error];
+                    console.log(error);
+                }
+            });
+            $("items-table").FullTable("draw");
+            console.log(ft);
+        }
+    );
+</script>

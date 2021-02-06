@@ -1,0 +1,132 @@
+@using Yalla_Notlob_Akl.Models
+@model List<Person>
+
+@{
+    ViewData["Title"] = "Persons Page";
+}
+
+<head>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <link rel="stylesheet" href="~/lib/FullTable/jquery.fulltable.css" />
+</head>
+
+<style>
+    td,
+    th {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    input {
+        border-radius: 12px;
+    }
+
+    a.button {
+			position: relative;
+			display: inline-block;
+
+			font-family: tahoma, arial, helvetica;
+			font-size: 9pt;
+			font-weight: bold;
+
+			color: #ffffff;
+			background-color: #AAAAAA;
+
+			padding: 5px;
+
+			text-decoration: none;
+
+			-webkit-border-radius: 5px;
+			-moz-border-radius: 5px;
+			border-radius: 5px;
+		}
+
+
+</style>
+
+<div class="container">
+    <h2>Persons</h2>
+    <table class="fulltable fulltable-editable table table-bordered table-hover" id="persons-table">
+        <thead>
+            <tr>
+                <th fulltable-field-name="PersonId" hidden></th>
+                <th fulltable-field-name="PersonName">Person Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in Model)
+            {
+                <tr>
+                    <td hidden><span>@person.id</span></td>
+                    <td><span>@person.name</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(
+        function () {
+            let ft = $("#persons-table").FullTable(
+                {
+                    "alwaysCreating": true,
+                    "fields":
+                    {
+                        "PersonId":
+                        {
+                            "mandatory": false,
+                            "hidden": true
+                        },
+                        "PersonName":
+                        {
+                            "mandatory": true,
+                            "placeholder": "Enter person name",
+                            "errors": {
+                                "mandatory": "Person name is mandatory"
+                            }
+                        },
+                    },
+                    "onSave": function (person) {
+                        if(person.PersonId){ // update
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("Update")",
+                                data: JSON.stringify({id: person.PersonId, name: person.PersonName }),
+                                contentType: 'application/json',
+                                success: function (msg) {
+                                    console.log(msg);
+                                },
+                                error: function (req, status, error) {
+                                    console.log(error);
+                                }
+                            })
+                        }else { // create
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("Add")",
+                                data: JSON.stringify({ name: person.PersonName }),
+                                contentType: 'application/json',
+                                success: function (msg) {
+                                    console.log(msg);
+                                },
+                                error: function (req, status, error) {
+                                    console.log(error);
+                                }
+                            })
+                        }
+                        
+                    },
+                }
+            );
+
+            $("#persons-table").FullTable("on", "error", function (errors) {
+                for (var error in errors) {
+                    error = errors[error];
+                    console.log(error);
+                }
+            });
+            $("persons-table").FullTable("draw");
+        }
+    );
+</script>

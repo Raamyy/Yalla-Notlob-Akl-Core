@@ -1,0 +1,168 @@
+@using Yalla_Notlob_Akl.Models
+@model OrderItemViewModel
+
+@{
+    ViewData["Title"] = "Persons Page";
+}
+
+<head>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <link rel="stylesheet" href="~/lib/FullTable/jquery.fulltable.css" />
+</head>
+
+<style>
+    td,
+    th {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    input {
+        border-radius: 12px;
+    }
+
+    a.button {
+        position: relative;
+        display: inline-block;
+
+        font-family: tahoma, arial, helvetica;
+        font-size: 9pt;
+        font-weight: bold;
+
+        color: #ffffff;
+        background-color: #AAAAAA;
+
+        padding: 5px;
+
+        text-decoration: none;
+
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+    }
+</style>
+
+<div class="container">
+    <h2>Persons</h2>
+    <table class="fulltable fulltable-editable table table-bordered table-hover" id="orderItems-table">
+        <thead>
+            <tr>
+                <th fulltable-field-name="OrderItemId" hidden></th>
+                <th fulltable-field-name="OrderItemPerson">Person Name</th>
+                <th fulltable-field-name="OrderItemItem">Item Name</th>
+                <th fulltable-field-name="OrderItemQuantity">Item Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var orderItem in Model.OrderItems)
+            {
+                <tr>
+                    <td hidden><span>@orderItem.id</span></td>
+                    <td><span>@orderItem.PersonId</span></td>
+                    <td><span>@orderItem.ItemId</span></td>
+                    <td><span>@orderItem.Quantity</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $(
+        function () {
+            let ft = $("#orderItems-table").FullTable(
+                {
+                    "alwaysCreating": true,
+                    "fields":
+                    {
+                        "OrderItemId":
+                        {
+                            "mandatory": false,
+                            "hidden": true
+                        },
+                        "OrderItemPerson":
+                        {
+                            "mandatory": true,
+                            "placeholder": "Enter person name",
+                            "options": [
+                                @foreach (var Person in Model.Persons)
+                                {
+                                    @:{ "title": "@Person.name", "value": "@Person.id"},
+                                }
+                            ],
+                            "errors": {
+                                "mandatory": "Person name is mandatory"
+                            }
+                        },
+                        "OrderItemItem":
+                        {
+                            "mandatory": true,
+                            "placeholder": "Enter item name",
+                            "options": [
+                                @foreach (var Item in Model.Items)
+                                {
+                                    @:{ "title": "@Item.name", "value": "@Item.id"},
+                                }
+                            ],
+                            "errors": {
+                                "mandatory": "Item name is mandatory"
+                            }
+                        },
+                        "OrderItemQuantity":
+                        {
+                            "mandatory": false,
+                            "type": "decimal",
+                            "placeholder": "Enter item Quantity",
+                            "validator": function (price) {
+                                if (isNaN(price)) return false;
+                                return price >= 0;
+                            },
+                            "errors": {
+                                "type": "pelase enter a number",
+                                "validator": "Item price should be a valid positive number"
+                            }
+                        },
+                    },
+                    "onSave": function (orderItem) {
+                        if (orderItem.OrderItemId) { // update
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("Update")",
+                                data: JSON.stringify({ id: orderItem.OrderItemId, ItemId: orderItem.OrderItemItem, PersonId: orderItem.OrderItemPerson, Quantity: orderItem.OrderItemQuantity }),
+                                contentType: 'application/json',
+                                success: function (msg) {
+                                    console.log(msg);
+                                },
+                                error: function (req, status, error) {
+                                    console.log(error);
+                                }
+                            })
+                        } 
+                        else { // create
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("Add")",
+                                data: JSON.stringify({  ItemId: orderItem.OrderItemItem, PersonId: orderItem.OrderItemPerson, Quantity: orderItem.OrderItemQuantity  }),
+                                contentType: 'application/json',
+                                success: function (msg) {
+                                    console.log(msg);
+                                },
+                                error: function (req, status, error) {
+                                    console.log(error);
+                                }
+                            })
+                        }
+                    }
+                }
+            );
+
+            $("#orderItems-table").FullTable("on", "error", function (errors) {
+                for (var error in errors) {
+                    error = errors[error];
+                    console.log(error);
+                }
+            });
+            $("orderItems-table").FullTable("draw");
+        }
+    );
+</script>
