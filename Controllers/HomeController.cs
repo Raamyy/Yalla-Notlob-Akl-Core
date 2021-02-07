@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Yalla_Notlob_Akl.DB;
 using Yalla_Notlob_Akl.Models;
-
+using Yalla_Notlob_Akl.Business;
 namespace Yalla_Notlob_Akl.Controllers
 {
 
@@ -22,7 +22,11 @@ namespace Yalla_Notlob_Akl.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            OrderStatsVM vm = new OrderStatsVM
+            {
+                OrderSummary = OrderCalculations.GetOrderSummary(new OrderItemDao().GetAll())            
+            };
+            return View(vm);
         }
 
         public IActionResult Privacy()
