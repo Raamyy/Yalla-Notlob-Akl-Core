@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Yalla_Notlob_Akl.DB;
 
 namespace Yalla_Notlob_Akl.Models
 {
@@ -18,6 +19,13 @@ namespace Yalla_Notlob_Akl.Models
             ItemId = itemId;
             PersonId = personId;
             Quantity = quantity;
+        }
+
+        public double? GetPrice(){
+            
+            var item =  new ItemDao().Get(ItemId);
+            if(item.price.HasValue) return item.price.Value * Quantity;
+            else return null;
         }
     }
 

@@ -22,9 +22,11 @@ namespace Yalla_Notlob_Akl.Controllers
 
         public IActionResult Index()
         {
+            var OrderItems = new OrderItemDao().GetAll();
             OrderStatsVM vm = new OrderStatsVM
             {
-                OrderSummary = OrderCalculations.GetOrderSummary(new OrderItemDao().GetAll())            
+                OrderSummary = OrderCalculations.GetOrderSummary(OrderItems),
+                OrderReciept = OrderCalculations.GetOrderReceipt(OrderItems, 20.2,30.5)           
             };
             return View(vm);
         }

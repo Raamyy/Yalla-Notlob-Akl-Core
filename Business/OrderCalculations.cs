@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Yalla_Notlob_Akl.DB;
@@ -5,15 +6,20 @@ using Yalla_Notlob_Akl.Models;
 
 namespace Yalla_Notlob_Akl.Business
 {
-    public class PersonOrderSummary{
+    public class PersonOrderSummary
+    {
         public double totalPrice;
         public double basePrice;
         public double taxFees;
         public double deleivryFees;
         public List<OrderItem> orderItems;
-        public PersonOrderSummary(){
+
+        public bool unKnownPrice;
+        public PersonOrderSummary()
+        {
             totalPrice = basePrice = taxFees = deleivryFees = 0;
             orderItems = new List<OrderItem>();
+            unKnownPrice = true;
         }
     }
     public static class OrderCalculations
@@ -30,33 +36,49 @@ namespace Yalla_Notlob_Akl.Business
                                 ItemCount = group.Sum(i => i.Quantity)
                             });
             Dictionary<Item, int> dict = new Dictionary<Item, int>();
-            foreach(var itemSummary in itemsSummary){
+            foreach (var itemSummary in itemsSummary)
+            {
                 dict[new ItemDao().Get(itemSummary.ItemId)] = itemSummary.ItemCount;
             }
             return dict;
         }
-        public static Dictionary<Person, PersonOrderSummary> GetOrderReceipt(List<OrderItem> orderItems, double taxFees, double deleivryFees){
+        public static Dictionary<Person, PersonOrderSummary> GetOrderReceipt(List<OrderItem> orderItems, double taxFees, double deleivryFees)
+        {
             double basePrice = 0;
-            Dictionary<Person, PersonOrderSummary> personOrder = new Dictionary<Person, PersonOrderSummary>();
+            Dictionary<string, PersonOrderSummary> personOrder = new Dictionary<string, PersonOrderSummary>();
             foreach (var orderItem in orderItems)
             {
                 Item item = new ItemDao().Get(orderItem.ItemId);
-                double currentItemPrice = item.price.Value * orderItem.Quantity;
-                basePrice += currentItemPrice;
-                Person person = new PersonDao().Get(orderItem.PersonId);
-                personOrder[person].basePrice += currentItemPrice;
-                personOrder[person].orderItems.Add(orderItem);
+                if (!personOrder.ContainsKey(orderItem.PersonId)) personOrder[orderItem.PersonId] = new PersonOrderSummary();
+                if (item.price.HasValue)
+                {
+                    double currentItemPrice = item.price.Value * orderItem.Quantity;
+                    basePrice += currentItemPrice;                    
+                    personOrder[orderItem.PersonId].basePrice += currentItemPrice;
+                    personOrder[orderItem.PersonId].orderItems.Add(orderItem);
+                    personOrder[orderItem.PersonId].unKnownPrice = false;
+                }else{
+                    personOrder[orderItem.PersonId].unKnownPrice = true;
+                }
             }
             foreach (var item in personOrder)
             {
-                item.Value.taxFees = (item.Value.basePrice / basePrice) * taxFees;
-                item.Value.deleivryFees = (item.Value.basePrice / basePrice) * deleivryFees;
+                item.Value.taxFees = Math.Ceiling((item.Value.basePrice / basePrice) * taxFees);
+                item.Value.deleivryFees = Math.Ceiling((item.Value.basePrice / basePrice) * deleivryFees);
                 item.Value.totalPrice = item.Value.basePrice + item.Value.taxFees + item.Value.deleivryFees;
             }
-            return personOrder;
+            Dictionary<Person, PersonOrderSummary> dict = new Dictionary<Person, PersonOrderSummary>();
+            foreach (var receipt in personOrder)
+            {
+                dict[new PersonDao().Get(receipt.Key)] = receipt.Value;
+            }
+            return dict;
         }
     }
-    public class OrderStatsVM{
-        public Dictionary<Item, int> OrderSummary {get; set;}
+    public class OrderStatsVM
+    {
+        public Dictionary<Item, int> OrderSummary { get; set; }
+        public Dictionary<Person, PersonOrderSummary> OrderReciept { get; set; }
+
     }
 }
