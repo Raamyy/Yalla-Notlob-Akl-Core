@@ -661,6 +661,7 @@ if (typeof Array.isArray != "function") {
 				return this;
 			},
 			'validateRow':function(row, writeRow) {
+				debugger
 				if (typeof row != "object") return this;
 				var error = false;
 				var errors = [];
@@ -864,10 +865,24 @@ if (typeof Array.isArray != "function") {
 				if (options.alwaysCreating === true) addRow();
 				return this;
 			},
-			'saveRow':function(row) {
+			'saveRow': async function(row) {
 				if (!options.editable) return this;
 				if (typeof row != "object") return this;
 				if (!validateRow(row)) return this;
+				// OVER HERE!!
+				// PREVENT ROW CREATE
+				for (var fieldName in row) {
+					if (!row.hasOwnProperty(fieldName)) continue;
+					if (fieldName.indexOf("__") == 0) continue;
+					row[fieldName] = row["__validated_values"][fieldName];
+				}
+				const shouldSave = await options.onSave(row);
+				if(!shouldSave) {
+					return this;
+				}
+				//--------------------------------------------------
+				if (!validateRow(row)) return this;
+
 				$(row["__dom"]).removeClass("fulltable-editing");
 				$(row["__dom"]).data("fulltable-editing", false);
 				if (row["__creating"]) {
@@ -877,16 +892,16 @@ if (typeof Array.isArray != "function") {
 					row["__creating"] = false;
 				}
 				for (var fieldName in row) {
+					debugger
 					if (!row.hasOwnProperty(fieldName)) continue;
 					if (fieldName.indexOf("__") == 0) continue;
 					var td = $(row["__dom"]).find("td[fulltable-field-name='" + fieldName + "']");
 					$(td).empty();
 					$(td).text(row["__validated_texts"][fieldName]);
-					row[fieldName] = row["__validated_values"][fieldName];
+					//row[fieldName] = row["__validated_values"][fieldName];
 				}
 				if (typeof table.getEvents().saveRow == "function") table.getEvents().saveRow(row);
 				if (options.alwaysCreating === true) addRow();
-				options.onSave(row);
 				return this;
 			},
 			'discardRow': function(row) {

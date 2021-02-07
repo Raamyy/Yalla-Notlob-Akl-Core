@@ -10,12 +10,13 @@ using Yalla_Notlob_Akl.Models;
 
 namespace Yalla_Notlob_Akl.Controllers
 {
-    public abstract class BaseController<Model,Dao>: Controller
-            where Model: BaseModel 
+    public abstract class BaseController<Model, Dao> : Controller
+            where Model : BaseModel
     {
         private Dao<Model> dao;
 
-        public BaseController(Dao<Model> dao){
+        public BaseController(Dao<Model> dao)
+        {
             this.dao = dao;
         }
 
@@ -27,8 +28,15 @@ namespace Yalla_Notlob_Akl.Controllers
         [HttpPost]
         public ActionResult Add([FromBody] Model m)
         {
-            var created = dao.Create(m);
-            return Json(created);
+            try
+            {
+                var created = dao.Create(m);
+                return Json(created);
+            }
+            catch
+            {
+                return Json(false);
+            }
         }
 
         [HttpPost]

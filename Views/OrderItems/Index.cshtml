@@ -123,34 +123,18 @@
                             }
                         },
                     },
-                    "onSave": function (orderItem) {
-                        if (orderItem.OrderItemId) { // update
-                            $.ajax({
-                                type: "POST",
-                                url: "@Url.Action("Update")",
-                                data: JSON.stringify({ id: orderItem.OrderItemId, ItemId: orderItem.OrderItemItem, PersonId: orderItem.OrderItemPerson, Quantity: orderItem.OrderItemQuantity }),
-                                contentType: 'application/json',
-                                success: function (msg) {
-                                    console.log(msg);
-                                },
-                                error: function (req, status, error) {
-                                    console.log(error);
-                                }
-                            })
+                    "onSave": async function (orderItem) { 
+                        if (orderItem.OrderItemId) { //update
+                             const response = await AjaxCall("@Url.Action("Update")", JSON.stringify({ id: orderItem.OrderItemId, ItemId: orderItem.OrderItemItem, PersonId: orderItem.OrderItemPerson, Quantity: orderItem.OrderItemQuantity }))
+                            return response == true;
                         } 
                         else { // create
-                            $.ajax({
-                                type: "POST",
-                                url: "@Url.Action("Add")",
-                                data: JSON.stringify({  ItemId: orderItem.OrderItemItem, PersonId: orderItem.OrderItemPerson, Quantity: orderItem.OrderItemQuantity  }),
-                                contentType: 'application/json',
-                                success: function (msg) {
-                                    console.log(msg);
-                                },
-                                error: function (req, status, error) {
-                                    console.log(error);
-                                }
-                            })
+                            const response  = await AjaxCall("@Url.Action("Add")", JSON.stringify({  ItemId: orderItem.OrderItemItem, PersonId: orderItem.OrderItemPerson, Quantity: orderItem.OrderItemQuantity  }))
+                            if(response.id){
+                                 $(orderItem.__dom).find("td[fulltable-field-name=OrderItemId]").find("input").val(response.id)
+                                return true
+                            }
+                            return false; 
                         }
                     }
                 }

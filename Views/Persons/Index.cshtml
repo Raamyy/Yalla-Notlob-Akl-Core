@@ -22,26 +22,24 @@
     }
 
     a.button {
-			position: relative;
-			display: inline-block;
+        position: relative;
+        display: inline-block;
 
-			font-family: tahoma, arial, helvetica;
-			font-size: 9pt;
-			font-weight: bold;
+        font-family: tahoma, arial, helvetica;
+        font-size: 9pt;
+        font-weight: bold;
 
-			color: #ffffff;
-			background-color: #AAAAAA;
+        color: #ffffff;
+        background-color: #AAAAAA;
 
-			padding: 5px;
+        padding: 5px;
 
-			text-decoration: none;
+        text-decoration: none;
 
-			-webkit-border-radius: 5px;
-			-moz-border-radius: 5px;
-			border-radius: 5px;
-		}
-
-
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+    }
 </style>
 
 <div class="container">
@@ -87,35 +85,18 @@
                             }
                         },
                     },
-                    "onSave": function (person) {
-                        if(person.PersonId){ // update
-                            $.ajax({
-                                type: "POST",
-                                url: "@Url.Action("Update")",
-                                data: JSON.stringify({id: person.PersonId, name: person.PersonName }),
-                                contentType: 'application/json',
-                                success: function (msg) {
-                                    console.log(msg);
-                                },
-                                error: function (req, status, error) {
-                                    console.log(error);
-                                }
-                            })
-                        }else { // create
-                            $.ajax({
-                                type: "POST",
-                                url: "@Url.Action("Add")",
-                                data: JSON.stringify({ name: person.PersonName }),
-                                contentType: 'application/json',
-                                success: function (msg) {
-                                    console.log(msg);
-                                },
-                                error: function (req, status, error) {
-                                    console.log(error);
-                                }
-                            })
+                    "onSave": async function (person) {
+                        if (person.PersonId) { // update
+                            const response = await AjaxCall("@Url.Action("Update")", ({ id: person.PersonId, name: person.PersonName }))
+                            return response == true;
+                        } else { // create
+                            const response = await AjaxCall("@Url.Action("Add")", JSON.stringify({ name: person.PersonName }))
+                            if (response.id) {
+                                $(person.__dom).find("td[fulltable-field-name=PersonId]").find("input").val(response.id)
+                                return true
+                            }
+                            return false;
                         }
-                        
                     },
                 }
             );

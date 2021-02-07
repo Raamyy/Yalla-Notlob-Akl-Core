@@ -104,37 +104,19 @@
                             }
                         }
                     },
-                    "onSave": function (item) {
+                    "onSave": async function (item) {
+                        console.log(item)
                         if(item.ItemId){ // update
-                            $.ajax({
-                                type: "POST",
-                                url: "@Url.Action("Update")",
-                                data: JSON.stringify({id: item.ItemId, name: item.ItemName, price: item.ItemPrice }),
-                                contentType: 'application/json',
-                                success: function (msg) {
-                                    console.log(msg);
-                                    console.log(item);
-                                },
-                                error: function (req, status, error) {
-                                    console.log(error);
-                                }
-                            })
+                            const response = await AjaxCall("@Url.Action("Update")", JSON.stringify({id: item.ItemId, name: item.ItemName, price: item.ItemPrice }))
+                            return response == true;
                         }else { // create
-                            $.ajax({
-                                type: "POST",
-                                url: "@Url.Action("Add")",
-                                data: JSON.stringify({ name: item.ItemName, price: item.ItemPrice }),
-                                contentType: 'application/json',
-                                success: function (msg) {
-                                    console.log(msg);
-                                    console.log(item);
-                                    item.ItemId = msg.id;
-                                    debugger
-                                },
-                                error: function (req, status, error) {
-                                    console.log(error);
-                                }
-                            })
+                            const response = await AjaxCall("@Url.Action("Add")", JSON.stringify({ name: item.ItemName, price: item.ItemPrice }))
+                            if(response.id){
+                                 $(item.__dom).find("td[fulltable-field-name=ItemId]").find("input").val(response.id)
+                                debugger
+                                return true
+                            }
+                            return false;
                         }
                         
                     },
