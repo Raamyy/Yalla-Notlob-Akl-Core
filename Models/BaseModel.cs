@@ -13,5 +13,10 @@ namespace Yalla_Notlob_Akl.Models
         {
             this.ModelType = ModelType;
         }
+
+        public string getCodeSafeId()
+        {
+            return "_"+id.Replace('-','_');
+        }
     }
 }

@@ -16,6 +16,8 @@
     <link href="~/lib/Metronic/assets/vendors/base/vendors.bundle.css" rel="stylesheet" type="text/css" />
     <link href="~/lib/Metronic/assets/vendors/base/vendors.bundle.css" rel="stylesheet" type="text/css" />
     <link href="~/lib/Metronic/assets/demo/default/base/style.bundle.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css">
+
     <!--end::Base Styles -->
 </head>
 
@@ -56,7 +58,9 @@
                                     @if (itemSummary.Key.price.HasValue)
                                     {
                                         @: L.E. @(itemSummary.Key.price * itemSummary.Value)
-                                    }else{
+                                    }
+                                    else
+                                    {
                                         @: -
                                     }
                                 </span>
@@ -68,7 +72,6 @@
         </div>
     </div>
     <!--end:: Order Summary-->
-
     <!--begin:: Widgets/Sale Reports-->
     <div class="col-xl-9">
         <div class="m-portlet m-portlet--full-height ">
@@ -90,28 +93,25 @@
                         <div class="m-widget11">
                             <div class="table-responsive">
                                 <!--begin::Table-->
-                                <table class="table">
+                                <table class="table" id="MainTable" data-detail-view="true">
                                     <!--begin::Thead-->
                                     <thead>
                                         <tr>
-                                            <td class="m-widget11__label">
-                                                #
-                                            </td>
-                                            <td class="m-widget11__app">
+                                            <th data-halign="center" data-align="center" class="m-widget11__app">
                                                 Person name
-                                            </td>
-                                            <td class="m-widget11__sales">
+                                            </th>
+                                            <th data-halign="center" data-align="center" class=" m-widget11__sales">
                                                 Base
-                                            </td>
-                                            <td class="m-widget11__price">
-                                                Tax 
-                                            </td>
-                                            <td class="m-widget11__price">
+                                            </th>
+                                            <th data-halign="center" data-align="center" class=" m-widget11__price">
+                                                Tax
+                                            </th>
+                                            <th data-halign="center" data-align="center" class=" m-widget11__price">
                                                 Delivery
-                                            </td>
-                                            <td class="m-widget11__total m--align-right">
+                                            </th>
+                                            <th data-halign="center" data-align="center" class=" m-widget11__total m--align-right">
                                                 Total
-                                            </td>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <!--end::Thead-->
@@ -119,29 +119,22 @@
                                     <tbody>
                                         @foreach (var Receipt in Model.OrderReciept)
                                         {
-                                            <tr>
-                                                <td>
-                                                    <label
-                                                        class="m-checkbox m-checkbox--solid m-checkbox--single m-checkbox--brand">
-                                                        <input type="checkbox">
-                                                        <span></span>
-                                                    </label>
-                                                </td>
-                                                <td>
+                                            <tr id="@Receipt.Key.getCodeSafeId()">
+                                                <td class="">
                                                     <span class="m-widget11__title">
                                                         @Receipt.Key.name
                                                     </span>
                                                 </td>
-                                                <td>
+                                                <td class="">
                                                     @Receipt.Value.basePrice
                                                 </td>
-                                                <td>
+                                                <td class="">
                                                     @Receipt.Value.taxFees
                                                 </td>
-                                                <td>
+                                                <td class="">
                                                     @Receipt.Value.deleivryFees
                                                 </td>
-                                                <td class="m--align-right m--font-brand">
+                                                <td  class="m--align-right m--font-brand ">
                                                     @Receipt.Value.totalPrice
                                                 </td>
                                             </tr>
@@ -150,6 +143,13 @@
                                     <!--end::Tbody-->
                                 </table>
                                 <!--end::Table-->
+                                @foreach(var person in Model.OrderReciept.Keys)
+                                {
+                            <table id="detailTable_@person.getCodeSafeId()">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table>
+                                }
                             </div>
                         </div>
                         <!--end::Widget 11-->
@@ -176,3 +176,63 @@
 <!--begin::Page Snippets -->
 <script src="~/lib/Metronic/assets/app/js/dashboard.js" type="text/javascript"></script>
 <!--end::Page Snippets -->
+<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+
+<script>
+    $('#MainTable').bootstrapTable({
+        detailFormatter: detailFormatter,
+        detailViewAlign: 'center'
+    });
+
+    @foreach(var person in Model.OrderReciept.Keys)
+    {
+    <text>
+    var OrderItems_@person.getCodeSafeId() = [
+            @foreach (var orderItem in Model.OrderReciept[person].orderItems) {
+                <text>
+                {
+                    "itemName": "@orderItem.GetItem().name",
+                    "quantity": @orderItem.Quantity,
+                    "basePrice": @orderItem.GetPrice()
+                },
+                </text>
+            }
+        ];
+    </text>
+    }
+
+    function detailFormatter(index, row, element) {
+        subTable = $('#detailTable_' + row._id).clone(true).attr('id', "tbl_" + row._id);
+        subTable.find('td').css('text-align', 'center');
+        subTable.find('th').css('text-align', 'center');
+        $(element).html(subTable.show());
+    }
+
+@foreach(var person in Model.OrderReciept.Keys)
+{
+    <text>
+    $('#detailTable_@person.getCodeSafeId()').bootstrapTable({
+    data: OrderItems_@person.getCodeSafeId(),
+        columns:
+        [
+            {
+                field: 'itemName',
+                title: 'Item Name'
+            },
+            {
+                field: 'quantity',
+                title: 'Quantity'
+            },
+            {
+                field: 'basePrice',
+                title: 'Price'
+            }
+        ],
+        checkboxHeader: false
+    });
+    $('#detailTable_@person.getCodeSafeId()').hide();
+    </text>
+}
+
+
+</script>

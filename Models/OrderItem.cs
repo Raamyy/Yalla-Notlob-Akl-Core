@@ -27,6 +27,16 @@ namespace Yalla_Notlob_Akl.Models
             if(item.price.HasValue) return item.price.Value * Quantity;
             else return null;
         }
+
+        public Item GetItem()
+        {
+            return new ItemDao().Get(ItemId);
+        }
+
+        public Person GetPerson()
+        {
+            return new PersonDao().Get(PersonId);
+        }
     }
 
     public class OrderItemViewModel

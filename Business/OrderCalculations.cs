@@ -63,8 +63,8 @@ namespace Yalla_Notlob_Akl.Business
             }
             foreach (var item in personOrder)
             {
-                item.Value.taxFees = Math.Ceiling((item.Value.basePrice / basePrice) * taxFees);
-                item.Value.deleivryFees = Math.Ceiling((item.Value.basePrice / basePrice) * deleivryFees);
+                item.Value.taxFees = Math.Round((item.Value.basePrice / basePrice) * taxFees,2);
+                item.Value.deleivryFees = Math.Round((item.Value.basePrice / basePrice) * deleivryFees, 2);
                 item.Value.totalPrice = item.Value.basePrice + item.Value.taxFees + item.Value.deleivryFees;
             }
             Dictionary<Person, PersonOrderSummary> dict = new Dictionary<Person, PersonOrderSummary>();
