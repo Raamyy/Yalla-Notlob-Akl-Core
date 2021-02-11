@@ -8,9 +8,13 @@
 <head>
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <link rel="stylesheet" href="~/lib/FullTable/jquery.fulltable.css" />
+    <link rel="stylesheet" href="~/lib/DataTables/datatables.min.css" />
 </head>
 
 <style>
+    .table td, .table th {
+        vertical-align: middle;
+    }
     td,
     th {
         text-align: center;
@@ -19,6 +23,7 @@
 
     input {
         border-radius: 12px;
+        padding-left: 5px;
     }
 
     a.button {

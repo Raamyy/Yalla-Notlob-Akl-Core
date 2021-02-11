@@ -2,25 +2,30 @@
 @model OrderStatsVM
 
 <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
-    <script>
-        WebFont.load({
-            google: { "families": ["Poppins:300,400,500,600,700", "Roboto:300,400,500,600,700"] },
-            active: function () {
-                sessionStorage.fonts = true;
-            }
-        });
-    </script>
+    @*<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>*@
+    @*<script>
+            WebFont.load({
+                google: { "families": ["Poppins:300,400,500,600,700", "Roboto:300,400,500,600,700"] },
+                active: function () {
+                    sessionStorage.fonts = true;
+                }
+            });
+        </script>*@
     <!--end::Web font -->
     <!--begin::Base Styles -->
     <link href="~/lib/Metronic/assets/vendors/base/vendors.bundle.css" rel="stylesheet" type="text/css" />
     <link href="~/lib/Metronic/assets/vendors/base/vendors.bundle.css" rel="stylesheet" type="text/css" />
     <link href="~/lib/Metronic/assets/demo/default/base/style.bundle.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css">
+    @*<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css">*@
 
     <!--end::Base Styles -->
 </head>
-
+<style>
+    .Order-Money-Summary .m-widget4__item {
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+</style>
 <div class="row">
     <!--begin:: Order Summary-->
     <div class="col-xl-3">
@@ -67,6 +72,62 @@
                             </span>
                         </div>
                     }
+                    <div class="Order-Money-Summary ">
+                        <div class="m-widget4__item">
+                            <div class="m-widget4__info">
+                                <span class="m-widget4__title">
+                                    Base Order Price
+                                </span>
+                                <br>
+                            </div>
+                            <span class="m-widget4__ext">
+                                <span class="m-widget4__number m--font-brand">
+                                    @Model.OrderBasePrice
+                                </span>
+                            </span>
+                        </div>
+                        <div class="m-widget4__item">
+
+                            <div class="m-widget4__info">
+                                <span class="m-widget4__title">
+                                    Delivery Fees
+                                </span>
+                                <br>
+                            </div>
+                            <span class="m-widget4__ext">
+                                <span class="m-widget4__number m--font-brand">
+                                    @Model.OrderDeliveryCost
+                                </span>
+                            </span>
+                        </div>
+                        <div class="m-widget4__item">
+                            <div class="m-widget4__info">
+                                <span class="m-widget4__title">
+                                    Tax Fees
+                                </span>
+                                <br>
+                            </div>
+                            <span class="m-widget4__ext">
+                                <span class="m-widget4__number m--font-brand">
+                                    @Model.OrderTaxCost
+                                </span>
+                            </span>
+                        </div>
+
+                        <div class="m-widget4__item">
+                            <div class="m-widget4__info">
+                                <span class="m-widget4__title">
+                                    Total Order Price
+                                </span>
+                                <br>
+                            </div>
+                            <span class="m-widget4__ext">
+                                <span class="m-widget4__number m--font-brand">
+                                    @Model.OrderTotalPrice
+                                </span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -134,7 +195,7 @@
                                                 <td class="">
                                                     @Receipt.Value.deleivryFees
                                                 </td>
-                                                <td  class="m--align-right m--font-brand ">
+                                                <td class="m--align-right m--font-brand ">
                                                     @Receipt.Value.totalPrice
                                                 </td>
                                             </tr>
@@ -143,12 +204,12 @@
                                     <!--end::Tbody-->
                                 </table>
                                 <!--end::Table-->
-                                @foreach(var person in Model.OrderReciept.Keys)
+                                @foreach (var person in Model.OrderReciept.Keys)
                                 {
-                            <table id="detailTable_@person.getCodeSafeId()">
-                                <thead></thead>
-                                <tbody></tbody>
-                            </table>
+                                    <table id="detailTable_@person.getCodeSafeId()">
+                                        <thead></thead>
+                                        <tbody></tbody>
+                                    </table>
                                 }
                             </div>
                         </div>
@@ -164,8 +225,6 @@
         </div>
     </div>
     <!--end:: Widgets/Sale Reports-->
-
-
 </div>
 
 
@@ -176,10 +235,10 @@
 <!--begin::Page Snippets -->
 <script src="~/lib/Metronic/assets/app/js/dashboard.js" type="text/javascript"></script>
 <!--end::Page Snippets -->
-<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
+@*<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>*@
 
 <script>
-    $('#MainTable').bootstrapTable({
+    @*$('#MainTable').bootstrapTable({
         detailFormatter: detailFormatter,
         detailViewAlign: 'center'
     });
@@ -193,7 +252,7 @@
                 {
                     "itemName": "@orderItem.GetItem().name",
                     "quantity": @orderItem.Quantity,
-                    "basePrice": @orderItem.GetPrice()
+                    "basePrice": "@(orderItem.GetPrice().HasValue ? orderItem.GetPrice().ToString(): "-")"
                 },
                 </text>
             }
@@ -232,7 +291,7 @@
     });
     $('#detailTable_@person.getCodeSafeId()').hide();
     </text>
-}
+}*@
 
 
 </script>

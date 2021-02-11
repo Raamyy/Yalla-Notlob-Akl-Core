@@ -8,13 +8,15 @@ using Microsoft.Extensions.Logging;
 using Yalla_Notlob_Akl.DB;
 using Yalla_Notlob_Akl.Models;
 using Yalla_Notlob_Akl.Business;
+
 namespace Yalla_Notlob_Akl.Controllers
 {
 
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private static ItemDao dao = new ItemDao();
+        private static double taxFees = 0.0;
+        private static double deliveryFees = 0.0;
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -23,10 +25,15 @@ namespace Yalla_Notlob_Akl.Controllers
         public IActionResult Index()
         {
             var OrderItems = new OrderItemDao().GetAll();
+            double OrderBasePrice = OrderCalculations.GetOrderBasePrice(OrderItems);
             OrderStatsVM vm = new OrderStatsVM
             {
                 OrderSummary = OrderCalculations.GetOrderSummary(OrderItems),
-                OrderReciept = OrderCalculations.GetOrderReceipt(OrderItems, 20.2,30.5)           
+                OrderReciept = OrderCalculations.GetOrderReceipt(OrderItems, taxFees, deliveryFees),
+                OrderBasePrice = OrderBasePrice,
+                OrderTaxCost = taxFees,
+                OrderDeliveryCost = deliveryFees,
+                OrderTotalPrice = OrderCalculations.GetTotalOrderPrice(OrderBasePrice, taxFees, deliveryFees)
             };
             return View(vm);
         }

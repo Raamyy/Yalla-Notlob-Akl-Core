@@ -2,7 +2,7 @@
 @model OrderItemViewModel
 
 @{
-    ViewData["Title"] = "Persons Page";
+    ViewData["Title"] = "Order Items Page";
 }
 
 <head>
@@ -11,6 +11,9 @@
 </head>
 
 <style>
+    .table td, .table th {
+        vertical-align: middle;
+    }
     td,
     th {
         text-align: center;
@@ -43,7 +46,7 @@
 </style>
 
 <div class="container">
-    <h2>Persons</h2>
+    <h2>Order Items</h2>
     <table class="fulltable fulltable-editable table table-bordered table-hover" id="orderItems-table">
         <thead>
             <tr>

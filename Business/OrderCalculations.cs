@@ -42,9 +42,15 @@ namespace Yalla_Notlob_Akl.Business
             }
             return dict;
         }
+
+        internal static double GetTotalOrderPrice(double orderBasePrice, double taxFees, double deliveryFees)
+        {
+            return orderBasePrice + taxFees + deliveryFees;
+        }
+
         public static Dictionary<Person, PersonOrderSummary> GetOrderReceipt(List<OrderItem> orderItems, double taxFees, double deleivryFees)
         {
-            double basePrice = 0;
+            double basePrice = GetOrderBasePrice(orderItems);
             Dictionary<string, PersonOrderSummary> personOrder = new Dictionary<string, PersonOrderSummary>();
             foreach (var orderItem in orderItems)
             {
@@ -53,17 +59,19 @@ namespace Yalla_Notlob_Akl.Business
                 if (item.price.HasValue)
                 {
                     double currentItemPrice = item.price.Value * orderItem.Quantity;
-                    basePrice += currentItemPrice;                    
                     personOrder[orderItem.PersonId].basePrice += currentItemPrice;
                     personOrder[orderItem.PersonId].orderItems.Add(orderItem);
                     personOrder[orderItem.PersonId].unKnownPrice = false;
-                }else{
+                }
+                else
+                {
                     personOrder[orderItem.PersonId].unKnownPrice = true;
+                    personOrder[orderItem.PersonId].orderItems.Add(orderItem);
                 }
             }
             foreach (var item in personOrder)
             {
-                item.Value.taxFees = Math.Round((item.Value.basePrice / basePrice) * taxFees,2);
+                item.Value.taxFees = Math.Round((item.Value.basePrice / basePrice) * taxFees, 2);
                 item.Value.deleivryFees = Math.Round((item.Value.basePrice / basePrice) * deleivryFees, 2);
                 item.Value.totalPrice = item.Value.basePrice + item.Value.taxFees + item.Value.deleivryFees;
             }
@@ -74,11 +82,30 @@ namespace Yalla_Notlob_Akl.Business
             }
             return dict;
         }
+
+        public static double GetOrderBasePrice(List<OrderItem> orderItems)
+        {
+            double basePrice = 0;
+            foreach (var orderItem in orderItems)
+            {
+                Item item = new ItemDao().Get(orderItem.ItemId);
+                if (item.price.HasValue)
+                {
+                    double currentItemPrice = item.price.Value * orderItem.Quantity;
+                    basePrice += currentItemPrice;
+                }
+            }
+            return basePrice;
+        }
     }
+
     public class OrderStatsVM
     {
         public Dictionary<Item, int> OrderSummary { get; set; }
         public Dictionary<Person, PersonOrderSummary> OrderReciept { get; set; }
-
+        public double OrderBasePrice { get; set; }
+        public double OrderTaxCost { get; set; }
+        public double OrderDeliveryCost { get; set; }
+        public double OrderTotalPrice { get; set; }
     }
 }
