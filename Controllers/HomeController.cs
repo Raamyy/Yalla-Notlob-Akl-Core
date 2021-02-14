@@ -11,12 +11,11 @@ using Yalla_Notlob_Akl.Business;
 
 namespace Yalla_Notlob_Akl.Controllers
 {
-
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private static double taxFees = 0.0;
-        private static double deliveryFees = 0.0;
+        private static double TaxFees = 0.0;
+        private static double DeliveryFees = 0.0;
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -29,15 +28,22 @@ namespace Yalla_Notlob_Akl.Controllers
             OrderStatsVM vm = new OrderStatsVM
             {
                 OrderSummary = OrderCalculations.GetOrderSummary(OrderItems),
-                OrderReciept = OrderCalculations.GetOrderReceipt(OrderItems, taxFees, deliveryFees),
+                OrderReciept = OrderCalculations.GetOrderReceipt(OrderItems, TaxFees, DeliveryFees),
                 OrderBasePrice = OrderBasePrice,
-                OrderTaxCost = taxFees,
-                OrderDeliveryCost = deliveryFees,
-                OrderTotalPrice = OrderCalculations.GetTotalOrderPrice(OrderBasePrice, taxFees, deliveryFees)
+                OrderTaxCost = TaxFees,
+                OrderDeliveryCost = DeliveryFees,
+                OrderTotalPrice = OrderCalculations.GetTotalOrderPrice(OrderBasePrice, TaxFees, DeliveryFees)
             };
-            return View(vm);
+            return View("Index",vm);
         }
 
+        [HttpPost]
+        public IActionResult SetOrderOptions( double taxFees, double deliveryFees)
+        {
+            TaxFees = taxFees;
+            DeliveryFees = deliveryFees;
+            return Index();
+        }
         public IActionResult Privacy()
         {
             return View();

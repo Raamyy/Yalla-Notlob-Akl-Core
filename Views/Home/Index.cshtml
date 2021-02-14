@@ -39,28 +39,30 @@
                     </div>
                 </div>
             </div>
-            <form role="form" class="form-horizontal">
+           @using(Html.BeginForm("SetOrderOptions", "Home", FormMethod.Post))
+            {
+
                 <div class="form-body container">
                     <div class="form-group">
                         <div class="row">
                             <label for="Form-deliveryFees" class="col-md-3 control-label">Delviery fees</label>
                             <div class="col-md-9">
-                                <input type="number" class="form-control" id="Form-deliveryFees" placeholder="@Model.OrderDeliveryCost" required>
+                                <input type="number" class="form-control" id="Form-deliveryFees" name="deliveryFees" placeholder="@Model.OrderDeliveryCost" required>
                             </div>
                         </div>
                         <div class="row">
                             <label for="Form-taxFees" class="col-md-3 control-label">Delviery fees</label>
                             <div class="col-md-9">
-                                <input type="number" class="form-control" id="Form-taxFees" placeholder="@Model.OrderTaxCost" required>
+                                <input type="number" class="form-control" id="Form-taxFees" name="taxFees" placeholder="@Model.OrderTaxCost" required>
                             </div>
                         </div>
                     </div>
                     <div class="form-actions right">
                         <button type="submit" class="btn green">Submit</button>
                     </div>
-                </div>
-                
-            </form>
+                </div>   
+            
+            }
         </div>
 
 
@@ -77,7 +79,7 @@
             <div class="m-portlet__body">
                 <div class="m-widget4">
                     @foreach (var itemSummary in Model.OrderSummary)
-                    {
+           {
                         <div class="m-widget4__item">
                             <span class="m-widget4__ext ">
                                 <span class="m-widget4__number m--font-brand">
