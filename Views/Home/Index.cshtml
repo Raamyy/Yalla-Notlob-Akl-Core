@@ -2,21 +2,21 @@
 @model OrderStatsVM
 
 <head>
-    @*<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>*@
-    @*<script>
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+    <script>
             WebFont.load({
                 google: { "families": ["Poppins:300,400,500,600,700", "Roboto:300,400,500,600,700"] },
                 active: function () {
                     sessionStorage.fonts = true;
                 }
             });
-        </script>*@
+        </script>
     <!--end::Web font -->
     <!--begin::Base Styles -->
     <link href="~/lib/Metronic/assets/vendors/base/vendors.bundle.css" rel="stylesheet" type="text/css" />
     <link href="~/lib/Metronic/assets/vendors/base/vendors.bundle.css" rel="stylesheet" type="text/css" />
     <link href="~/lib/Metronic/assets/demo/default/base/style.bundle.css" rel="stylesheet" type="text/css" />
-    @*<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css">*@
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css">
 
     <!--end::Base Styles -->
 </head>
@@ -28,7 +28,7 @@
 </style>
 <div class="row">
     <!--begin:: Order Summary-->
-    <div class="col-xl-4">
+    <div class="col-xl-5">
         <div class="m-portlet m-portlet--bordered-semi form">
             <div class="m-portlet__head">
                 <div class="m-portlet__head-caption">
@@ -45,20 +45,26 @@
                 <div class="form-body container">
                     <div class="form-group">
                         <div class="row">
-                            <label for="Form-deliveryFees" class="col-md-3 control-label">Delviery fees</label>
+                            <div class="col-md-3 d-flex align-items-center">
+                                <i class="fa fa-motorcycle"></i>
+                                <label for="Form-deliveryFees" class="col-md-3 control-label">Delviery fees</label>
+                            </div>
                             <div class="col-md-9">
-                                <input type="number" class="form-control" id="Form-deliveryFees" name="deliveryFees" placeholder="@Model.OrderDeliveryCost" required>
+                                <input type="number" class="form-control" id="Form-deliveryFees" name="deliveryFees" value="@Model.OrderDeliveryCost" required>
                             </div>
                         </div>
                         <div class="row">
-                            <label for="Form-taxFees" class="col-md-3 control-label">Delviery fees</label>
+                            <div class="col-md-3 d-flex align-items-center">
+                                <i class="fa fa-dollar"></i>
+                                <label for="Form-taxFees" class="col-md-3 control-label">Tax fees</label>
+                            </div>
                             <div class="col-md-9">
-                                <input type="number" class="form-control" id="Form-taxFees" name="taxFees" placeholder="@Model.OrderTaxCost" required>
+                                <input type="number" class="form-control" id="Form-taxFees" name="taxFees" value="@Model.OrderTaxCost" required>
                             </div>
                         </div>
                     </div>
-                    <div class="form-actions right">
-                        <button type="submit" class="btn green">Submit</button>
+                    <div class="form-actions right d-flex justify-content-end">
+                          <button type="submit" class="btn btn-secondary m-2">Submit</button>
                     </div>
                 </div>   
             
@@ -132,7 +138,7 @@
                                 <br>
                             </div>
                             <span class="m-widget4__ext">
-                                <span class="m-widget4__number m--font-brand">
+                                <span class="m-widget4__number text-warning">
                                     @Model.OrderDeliveryCost
                                 </span>
                             </span>
@@ -145,21 +151,21 @@
                                 <br>
                             </div>
                             <span class="m-widget4__ext">
-                                <span class="m-widget4__number m--font-brand">
+                                <span class="m-widget4__number text-warning">
                                     @Model.OrderTaxCost
                                 </span>
                             </span>
                         </div>
 
-                        <div class="m-widget4__item">
-                            <div class="m-widget4__info">
+                        <div class="m-widget4__item ">
+                            <div class="m-widget4__info border-top">
                                 <span class="m-widget4__title">
                                     Total Order Price
                                 </span>
                                 <br>
                             </div>
                             <span class="m-widget4__ext">
-                                <span class="m-widget4__number m--font-brand">
+                                <span class="m-widget4__number text-success">
                                     @Model.OrderTotalPrice
                                 </span>
                             </span>
@@ -171,7 +177,7 @@
     </div>
     <!--end:: Order Summary-->
     <!--begin:: Widgets/Sale Reports-->
-    <div class="col-xl-8">
+    <div class="col-xl-7">
         <div class="m-portlet m-portlet--full-height ">
             <div class="m-portlet__head">
                 <div class="m-portlet__head-caption">
@@ -272,10 +278,10 @@
 <!--begin::Page Snippets -->
 <script src="~/lib/Metronic/assets/app/js/dashboard.js" type="text/javascript"></script>
 <!--end::Page Snippets -->
-@*<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>*@
+<script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
 
 <script>
-    @*$('#MainTable').bootstrapTable({
+    $('#MainTable').bootstrapTable({
         detailFormatter: detailFormatter,
         detailViewAlign: 'center'
     });
@@ -328,7 +334,7 @@
     });
     $('#detailTable_@person.getCodeSafeId()').hide();
     </text>
-}*@
+}
 
 
 </script>

@@ -42,7 +42,7 @@ namespace Yalla_Notlob_Akl.Controllers
         {
             TaxFees = taxFees;
             DeliveryFees = deliveryFees;
-            return Index();
+            return Redirect("Index");
         }
         public IActionResult Privacy()
         {
