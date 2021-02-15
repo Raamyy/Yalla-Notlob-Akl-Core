@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Yalla_Notlob_Akl.DB;
 using Yalla_Notlob_Akl.Models;
+using Yalla_Notlob_Akl.ViewModels;
 
 namespace Yalla_Notlob_Akl.Controllers
 {

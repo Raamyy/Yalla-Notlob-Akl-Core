@@ -38,13 +38,4 @@ namespace Yalla_Notlob_Akl.Models
             return new PersonDao().Get(PersonId);
         }
     }
-
-    public class OrderItemViewModel
-    {
-        public List<OrderItem> OrderItems { get; set; }
-        public List<Item> Items { get; set; }
-
-        public List<Person> Persons { get; set; }
-
-    }
 }
