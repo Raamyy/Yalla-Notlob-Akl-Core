@@ -4,6 +4,7 @@
 // Write your JavaScript code.
 
 async function AjaxCall(url, data) {
+    debugger
     let result;
 
     try {

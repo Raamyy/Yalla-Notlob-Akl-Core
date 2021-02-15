@@ -27,6 +27,7 @@ namespace Yalla_Notlob_Akl.DB
 
         public override bool Delete(string id)
         {
+            Console.WriteLine($"deleting {id}");
             var currentList = storage.Get<List<T>>(tableName);
             currentList.RemoveAll(i => i.id == id);
             storage.Store<List<T>>(tableName, currentList);

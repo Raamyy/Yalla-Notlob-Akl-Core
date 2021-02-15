@@ -126,6 +126,11 @@
                             }
                         },
                     },
+                    "onRemoveRow": async function(orderItem){
+                        console.log(orderItem)
+                        const response = await AjaxCall("@Url.Action("Delete")", JSON.stringify({ id: orderItem.OrderItemId}))
+                        return response == true;
+                    },
                     "onSave": async function (orderItem) { 
                         if (orderItem.OrderItemId) { //update
                              const response = await AjaxCall("@Url.Action("Update")", JSON.stringify({ id: orderItem.OrderItemId, ItemId: orderItem.OrderItemItem, PersonId: orderItem.OrderItemPerson, Quantity: orderItem.OrderItemQuantity }))

@@ -56,6 +56,7 @@ if (typeof Array.isArray != "function") {
 		};
 		
 		table.getEvents = function() {
+			debugger
 			if ($(table).data('fulltable-events') == null) $(table).data('fulltable-events', {});
 			return $(table).data('fulltable-events');
 		};
@@ -861,7 +862,9 @@ if (typeof Array.isArray != "function") {
 					});
 					$(td).append($(input));
 				}
+				debugger
 				if (typeof table.getEvents().removeRow == "function") table.getEvents().removeRow(row);
+				if (typeof options.onRemoveRow == "function") options.onRemoveRow(row);
 				if (options.alwaysCreating === true) addRow();
 				return this;
 			},

@@ -44,5 +44,12 @@ namespace Yalla_Notlob_Akl.Controllers
         {
             return Json(dao.Update(m));
         }
+
+        [HttpPost]
+        public ActionResult Delete([FromBody] Model m)
+        {
+            Console.WriteLine($"Deleting {m.id}");
+            return Json(dao.Delete(m.id));
+        }
     }
 }
