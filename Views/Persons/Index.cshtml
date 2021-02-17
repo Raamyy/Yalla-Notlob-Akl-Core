@@ -90,7 +90,7 @@
                     },
                     "onSave": async function (person) {
                         if (person.PersonId) { // update
-                            const response = await AjaxCall("@Url.Action("Update")", ({ id: person.PersonId, name: person.PersonName }))
+                            const response = await AjaxCall("@Url.Action("Update")", JSON.stringify({ id: person.PersonId, name: person.PersonName }))
                             return response == true;
                         } else { // create
                             const response = await AjaxCall("@Url.Action("Add")", JSON.stringify({ name: person.PersonName }))
