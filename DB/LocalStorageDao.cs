@@ -22,6 +22,7 @@ namespace Yalla_Notlob_Akl.DB
             t.id = GenerateGUID();
             currentList.Add(t);
             storage.Store<List<T>>(tableName, currentList);
+            storage.Persist();
             return t;
         }
 
@@ -31,6 +32,7 @@ namespace Yalla_Notlob_Akl.DB
             var currentList = storage.Get<List<T>>(tableName);
             currentList.RemoveAll(i => i.id == id);
             storage.Store<List<T>>(tableName, currentList);
+            storage.Persist();
             return true;
         }
 
@@ -49,6 +51,7 @@ namespace Yalla_Notlob_Akl.DB
                 }
             }
             storage.Store<List<T>>(tableName, currentList);
+            storage.Persist();
             return true;
         }
 
