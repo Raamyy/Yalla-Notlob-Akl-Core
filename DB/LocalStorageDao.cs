@@ -16,9 +16,12 @@ namespace Yalla_Notlob_Akl.DB
             HttpContextAccessor _accessor = new HttpContextAccessor();
             _sessionId = _accessor.HttpContext.Session.Id;
             Console.WriteLine(_sessionId);
+            InitLocalStorage();
         }
         private string tableName;
-        private static LocalStorage storage = new LocalStorage();
+
+        // sessionId mapped to it's localstorage
+        private static Dictionary<string, LocalStorage> storage = new Dictionary<string, LocalStorage>();
 
         private string _sessionId;
         public override T Create(T t)
@@ -26,37 +29,39 @@ namespace Yalla_Notlob_Akl.DB
             var currentList = GetCurrentList();
             t.id = GenerateGUID();
             currentList.Add(t);
-            storage.Store<List<T>>(tableName, currentList);
-            storage.Persist();
+            storage[_sessionId].Store<List<T>>(tableName, currentList);
+            storage[_sessionId].Persist();
             return t;
         }
 
         public override bool Delete(string id)
         {
             Console.WriteLine($"deleting {id}");
-            var currentList = storage.Get<List<T>>(tableName);
+            var currentList = storage[_sessionId].Get<List<T>>(tableName);
             currentList.RemoveAll(i => i.id == id);
-            storage.Store<List<T>>(tableName, currentList);
-            storage.Persist();
+            storage[_sessionId].Store<List<T>>(tableName, currentList);
+            storage[_sessionId].Persist();
             return true;
         }
 
         public override T Get(string id)
         {
-            return storage.Get<List<T>>(tableName).Single(i => i.id == id);
+            return storage[_sessionId].Get<List<T>>(tableName).Single(i => i.id == id);
         }
 
         public override bool Update(T t)
         {
-            var currentList = storage.Get<List<T>>(tableName);
-            for(int i = 0 ; i<currentList.Count; i++){
-                if(currentList[i].id == t.id){
+            var currentList = storage[_sessionId].Get<List<T>>(tableName);
+            for (int i = 0; i < currentList.Count; i++)
+            {
+                if (currentList[i].id == t.id)
+                {
                     currentList[i] = t;
                     break;
                 }
             }
-            storage.Store<List<T>>(tableName, currentList);
-            storage.Persist();
+            storage[_sessionId].Store<List<T>>(tableName, currentList);
+            storage[_sessionId].Persist();
             return true;
         }
 
@@ -65,14 +70,26 @@ namespace Yalla_Notlob_Akl.DB
             return Guid.NewGuid().ToString();
         }
 
-        private List<T> GetCurrentList(){
-            if(storage.Exists(tableName)) return storage.Get<List<T>>(tableName);
+        private List<T> GetCurrentList()
+        {
+            if (storage[_sessionId].Exists(tableName)) return storage[_sessionId].Get<List<T>>(tableName);
             else return new List<T>();
         }
 
         public override List<T> GetAll()
         {
             return GetCurrentList();
+        }
+
+        private void InitLocalStorage()
+        {
+            if (!storage.ContainsKey(_sessionId)) storage[_sessionId] = new LocalStorage(
+                new LocalStorageConfiguration
+                {
+                    Filename = $"DATA_{_sessionId}",
+                    AutoLoad = true
+                }
+            );
         }
     }
 }

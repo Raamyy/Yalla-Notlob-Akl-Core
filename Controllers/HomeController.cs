@@ -9,13 +9,46 @@ using Yalla_Notlob_Akl.DB;
 using Yalla_Notlob_Akl.Models;
 using Yalla_Notlob_Akl.Business;
 using Yalla_Notlob_Akl.ViewModels;
+using Microsoft.AspNetCore.Http;
+
 namespace Yalla_Notlob_Akl.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private static double TaxFees = 0.0;
-        private static double DeliveryFees = 0.0;
+        
+        private static Dictionary<string, double> _TaxFees = new Dictionary<string, double>();
+        private static Dictionary<string, double> _DeliveryFees = new Dictionary<string, double>();
+
+        private static double TaxFees {
+            get
+            {
+                string _sessionId = new HttpContextAccessor().HttpContext.Session.Id;
+                Console.WriteLine(_sessionId);
+                if(_TaxFees.ContainsKey(_sessionId)) return _TaxFees[_sessionId];
+                else return 0.0;
+            }
+            set
+            {
+                string _sessionId = new HttpContextAccessor().HttpContext.Session.Id;
+                _TaxFees[_sessionId] = value;
+            }
+        }
+
+        private static double DeliveryFees {
+            get
+            {
+                string _sessionId = new HttpContextAccessor().HttpContext.Session.Id;
+                if(_DeliveryFees.ContainsKey(_sessionId)) return _DeliveryFees[_sessionId];
+                else return 0.0;
+            }
+            set
+            {
+                string _sessionId = new HttpContextAccessor().HttpContext.Session.Id;
+                _DeliveryFees[_sessionId] = value;
+            }
+        }
+
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -23,6 +56,7 @@ namespace Yalla_Notlob_Akl.Controllers
 
         public IActionResult Index()
         {
+            HttpContext.Session.Set("init", BitConverter.GetBytes(true));
             var OrderItems = new OrderItemDao().GetAll();
             double OrderBasePrice = OrderCalculations.GetOrderBasePrice(OrderItems);
             OrderStatsVM vm = new OrderStatsVM
