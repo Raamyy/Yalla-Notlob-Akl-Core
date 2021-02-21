@@ -22,6 +22,8 @@ namespace Yalla_Notlob_Akl.Controllers
 
         public virtual IActionResult Index()
         {
+            // to init session cookie? should be..
+            HttpContext.Session.Set("init", BitConverter.GetBytes(true));
             return View(dao.GetAll());
         }
 

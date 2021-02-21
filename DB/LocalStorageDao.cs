@@ -3,6 +3,7 @@ using Hanssens.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace Yalla_Notlob_Akl.DB
 {
@@ -12,10 +13,14 @@ namespace Yalla_Notlob_Akl.DB
         public LocalStorageDao(string tableName)
         {
             this.tableName = tableName;
+            HttpContextAccessor _accessor = new HttpContextAccessor();
+            _sessionId = _accessor.HttpContext.Session.Id;
+            Console.WriteLine(_sessionId);
         }
         private string tableName;
         private static LocalStorage storage = new LocalStorage();
 
+        private string _sessionId;
         public override T Create(T t)
         {
             var currentList = GetCurrentList();
